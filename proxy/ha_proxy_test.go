@@ -1077,7 +1077,7 @@ frontend service_1234
     mode tcp
     tcp-request inspect-delay 5s
     tcp-request content accept if { req_ssl_hello_type 1 }
-    acl sni_my-service-14321-1
+    acl sni_my-service-14321-1 req.ssl_sni -i my-domain.com
     use_backend my-service-1-be4321_3 if sni_my-service-14321-1%s`,
 		tmpl,
 		s.ServicesContent,
@@ -1089,8 +1089,9 @@ frontend service_1234
 	p := NewHaProxy(s.TemplatesPath, s.ConfigsPath)
 	dataInstance.Services["my-service-1"] = Service{
 		ServiceName: "my-service-1",
+		PathType: "path_beg",
 		ServiceDest: []ServiceDest{
-			{SrcPort: 1234, Port: "4321", ReqMode: "sni", Index: 3},
+			{SrcPort: 1234, Port: "4321", ReqMode: "sni", Index: 3, ServicePath: []string{"/"}, ServiceDomain: []string{"my-domain.com"}},
 		},
 	}
 

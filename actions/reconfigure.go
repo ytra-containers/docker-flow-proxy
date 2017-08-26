@@ -150,7 +150,7 @@ func (m *Reconfigure) formatData(sr *proxy.Service) {
 		sr.PathType = "path_beg"
 	}
 	for i, sd := range sr.ServiceDest {
-		if sd.SrcPort > 0 {
+		if sd.SrcPort > 0 && !strings.EqualFold(sd.ReqMode, "sni") {
 			sr.ServiceDest[i].SrcPortAclName = fmt.Sprintf(" srcPort_%s%d", sr.ServiceName, sd.SrcPort)
 			sr.ServiceDest[i].SrcPortAcl = fmt.Sprintf(`
     acl srcPort_%s%d dst_port %d`, sr.ServiceName, sd.SrcPort, sd.SrcPort)

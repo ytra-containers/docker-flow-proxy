@@ -460,7 +460,7 @@ frontend service_{{$sd1.SrcPort}}
     tcp-request content accept if { req_ssl_hello_type 1 }`, si)
 	}
 	tmplString += fmt.Sprintf(`{{$sd := index $.ServiceDest %d}}
-    acl sni_{{.AclName}}{{$sd.Port}}-%d{{range $sd.ServicePath}} {{$.PathType}} {{.}}{{end}}{{$sd.SrcPortAcl}}
+    acl sni_{{.AclName}}{{$sd.Port}}-%d{{range $sd.ServiceDomain}} req.ssl_sni -i {{.}}{{end}}{{$sd.SrcPortAcl}}
     use_backend {{$.ServiceName}}-be{{$sd.Port}}_{{$sd.Index}} if sni_{{$.AclName}}{{$sd.Port}}-%d{{$.AclCondition}}{{$sd.SrcPortAclName}}`, si, si+1, si+1)
 	return templateToString(tmplString, s)
 }
