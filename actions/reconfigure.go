@@ -190,4 +190,3 @@ func (m *Reconfigure) parseBackTemplate(src, usersList string, sr *proxy.Service
 func (m *Reconfigure) hasTemplate() bool {
 	return len(m.TemplateBePath) != 0 || len(m.TemplateFePath) != 0
 }
-

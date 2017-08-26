@@ -1089,7 +1089,7 @@ frontend service_1234
 	p := NewHaProxy(s.TemplatesPath, s.ConfigsPath)
 	dataInstance.Services["my-service-1"] = Service{
 		ServiceName: "my-service-1",
-		PathType: "path_beg",
+		PathType:    "path_beg",
 		ServiceDest: []ServiceDest{
 			{SrcPort: 1234, Port: "4321", ReqMode: "sni", Index: 3, ServicePath: []string{"/"}, ServiceDomain: []string{"my-domain.com"}},
 		},
