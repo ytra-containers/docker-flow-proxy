@@ -1,62 +1,52 @@
 package proxy
 
 import (
-        "bytes"
-        "fmt"
-        "io"
-        "io/ioutil"
-        "log"
-        "net"
-        "net/http"
-        "os"
-        "os/exec"
-        "regexp"
-        "strings"
-        "sync"
-        "unicode"
+    "bytes"
+    "fmt"
+    "io"
+    "io/ioutil"
+    "log"
+    "net"
+    "net/http"
+    "os"
+    "os/exec"
+    "regexp"
+    "strings"
+    "sync"
+    "unicode"
 )
 
+var haProxyCmd = "haproxy"
+
 var cmdRunHa = func(args []string) error {
-        var stdoutBuf, stderrBuf bytes.Buffer
-        cmd := exec.Command("haproxy", args...)
+    var stdoutBuf, stderrBuf bytes.Buffer
+    cmd := exec.Command(haProxyCmd, args...)
 
-        stdoutIn, _ := cmd.StdoutPipe()
-        stderrIn, _ := cmd.StderrPipe()
+    stdoutIn, _ := cmd.StdoutPipe()
+    stderrIn, _ := cmd.StderrPipe()
 
-        var errStdout, errStderr error
-        stdout := io.MultiWriter(os.Stdout, &stdoutBuf)
-        stderr := io.MultiWriter(os.Stderr, &stderrBuf)
-        err := cmd.Start()
-        if err != nil {
-                fmt.Errorf("cmd.Start() failed with '%s'\n", err)
-        }
+    stdout := io.MultiWriter(os.Stdout, &stdoutBuf)
+    stderr := io.MultiWriter(os.Stderr, &stderrBuf)
+    cmd.Start()
 
-        go func() {
-                _, errStdout = io.Copy(stdout, stdoutIn)
-        }()
+    go func() {
+        io.Copy(stdout, stdoutIn)
+    }()
 
-        go func() {
-                _, errStderr = io.Copy(stderr, stderrIn)
-        }()
+    go func() {
+        io.Copy(stderr, stderrIn)
+    }()
 
-        err = cmd.Wait()
-        if err != nil{
-                fmt.Errorf("Command finished with error: %v", err)
-        }
-   
-        if errStdout != nil || errStderr != nil {
-                fmt.Errorf("failed to capture stdout or stderr\n")
-        }
+    cmd.Wait()
 
+    outStr, errStr := string(stdoutBuf.Bytes()), string(stderrBuf.Bytes())
+    combinedOut := fmt.Sprintf("\nout:\n%s\nerr:\n%s\n", outStr, errStr)
 
-        outStr, errStr := string(stdoutBuf.Bytes()), string(stderrBuf.Bytes())
-        combinedOut := fmt.Sprintf("\nout:\n%s\nerr:\n%s\n", outStr, errStr)
+    if strings.Contains(combinedOut, "could not resolve address") || errStr != "" {
+        return fmt.Errorf(combinedOut)
+    }
 
-        if strings.Contains(combinedOut, "could not resolve address") || errStr != "" {
-                err = fmt.Errorf(combinedOut)
-        }
-
-        return err
+    return nil
 }
 
 var cmdValidateHa = func(args []string) error {
