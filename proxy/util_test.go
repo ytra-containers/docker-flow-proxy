@@ -41,7 +41,7 @@ func (s *UtilTestSuite) Test_HaProxyCmd_ReturnsError_WhenStdErrIsNotEmpty() {
 	haProxyCmdOrig := haProxyCmd
 	defer func() { haProxyCmd = haProxyCmdOrig }()
 	haProxyCmd = "ls"
-	err := cmdRunHa([]string{"-Q"}) // `-Q` argument is invalid
+	err := cmdRunHa([]string{"-j"}) // `-j` argument is invalid
 
 	s.Error(err)
 }
