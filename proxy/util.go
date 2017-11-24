@@ -13,6 +13,7 @@ import (
     "regexp"
     "strings"
     "sync"
+    "syscall"
     "unicode"
 )
 
@@ -37,15 +38,22 @@ var cmdRunHa = func(args []string) error {
         io.Copy(stderr, stderrIn)
     }()
 
-    cmd.Wait()
+    err := cmd.Wait()
 
     outStr, errStr := string(stdoutBuf.Bytes()), string(stderrBuf.Bytes())
-    combinedOut := fmt.Sprintf("\nout:\n%s\nerr:\n%s\n", outStr, errStr)
+    combinedOut := fmt.Sprintf("\nstdout:\n%s\nstderr:\n%s\n", outStr, errStr)
 
-    if strings.Contains(combinedOut, "could not resolve address") || errStr != "" {
+    if exitError, ok := err.(*exec.ExitError); ok {
+        waitStatus := exitError.Sys().(syscall.WaitStatus)
+        fmt.Printf("Exit Status: %s\n", []byte(fmt.Sprintf("%d", waitStatus.ExitStatus())))
         return fmt.Errorf(combinedOut)
     }
-
+	
+    if errStr != "" {
+        fmt.Println("The configuration file is valid, but there still may be a misconfiguration",
+         "somewhere that will give unexpected results, please verify:", combinedOut)
+    }
+	
     return nil
 }
 
