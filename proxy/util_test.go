@@ -3,6 +3,7 @@ package proxy
 import (
 	"os"
 	"testing"
+
 	"github.com/stretchr/testify/suite"
 )
 
@@ -28,15 +29,6 @@ func (s *UtilTestSuite) Test_HaProxyCmd_DoesNotReturnErrorWhenStdErrIsEmpty() {
 	s.NoError(err)
 }
 
-func (s *UtilTestSuite) Test_HaProxyCmd_ReturnsError_WhenOutputContainsCouldNotResolveAddress() {
-	haProxyCmdOrig := haProxyCmd
-	defer func() { haProxyCmd = haProxyCmdOrig }()
-	haProxyCmd = "echo"
-	err := cmdRunHa([]string{"'I really could not resolve address and something else'"})
-
-	s.Error(err)
-}
-
 func (s *UtilTestSuite) Test_HaProxyCmd_ReturnsError_WhenStdErrIsNotEmpty() {
 	haProxyCmdOrig := haProxyCmd
 	defer func() { haProxyCmd = haProxyCmdOrig }()
@@ -45,4 +37,3 @@ func (s *UtilTestSuite) Test_HaProxyCmd_ReturnsError_WhenStdErrIsNotEmpty() {
 
 	s.Error(err)
 }
-
