@@ -1,20 +1,18 @@
 package proxy
 
 import (
-    "bytes"
-    "fmt"
-    "io"
-    "io/ioutil"
-    "log"
-    "net"
-    "net/http"
-    "os"
-    "os/exec"
-    "regexp"
-    "strings"
-    "sync"
-    "syscall"
-    "unicode"
+	"bytes"
+	"fmt"
+	"io/ioutil"
+	"log"
+	"net"
+	"net/http"
+	"os"
+	"os/exec"
+	"regexp"
+	"strings"
+	"sync"
+	"unicode"
 )
 
 var haProxyCmd = "haproxy"
