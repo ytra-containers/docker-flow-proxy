@@ -7,8 +7,6 @@ docker container run --rm -it -v $PWD:/src vfarcic/gox docker-flow-proxy
 
 export GITHUB_TOKEN=[...]
 
-docker container run --rm -it -e GITHUB_TOKEN=$GITHUB_TOKEN -v $PWD:/src -w /src vfarcic/github-release
-
 #msg = sh(returnStdout: true, script: "git log --format=%B -1").trim()
 
 # Change -a and -m
