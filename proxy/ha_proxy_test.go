@@ -1534,8 +1534,10 @@ func (s HaProxyTestSuite) Test_CreateConfigFromTemplates_ForwardsToDomain_WhenRe
 		`%s
     acl url_my-service1111_0 path_beg /path
     acl domain_my-service1111_0 hdr_beg(host) -i my-domain-1.com my-domain-2.com
-    http-request redirect code 301 prefix http://my-domain-1.com if { hdr_beg(host) -i my-other-domain-1.com }
-    http-request redirect code 301 prefix http://my-domain-1.com if { hdr_beg(host) -i my-other-domain-2.com }
+	http-request redirect code 301 prefix http://my-domain-1.com if { hdr_beg(host) -i my-other-domain-1.com !{ ssl_fc } }
+	http-request redirect code 301 prefix https://my-domain-1.com if { hdr_beg(host) -i my-other-domain-1.com { ssl_fc } }
+	http-request redirect code 301 prefix http://my-domain-1.com if { hdr_beg(host) -i my-other-domain-2.com !{ ssl_fc } }
+	http-request redirect code 301 prefix https://my-domain-1.com if { hdr_beg(host) -i my-other-domain-2.com { ssl_fc } }
     use_backend my-service-be1111_0 if url_my-service1111_0 domain_my-service1111_0%s`,
 		tmpl,
 		s.ServicesContent,
