@@ -1,8 +1,0 @@
-FROM vfarcic/docker-flow-proxy-test-base
-
-COPY . /src
-WORKDIR /src
-RUN chmod +x /src/run-tests.sh
-RUN go get -d -v -t
-
-CMD ["sh", "-c", "/src/run-tests.sh"]
